@@ -25,8 +25,7 @@ public class BinarySearchTree {
      * @param value The value to insert
      */
     public void insert(int value) {
-        // TODO: Implement this method
-        // Hint: Use a recursive helper method
+        root = insertHelper(root, value);
     }
 
     /**
@@ -36,8 +35,7 @@ public class BinarySearchTree {
      * @return true if the value exists in the tree, false otherwise
      */
     public boolean search(int value) {
-        // TODO: Implement this method
-        // Hint: Use recursion and leverage BST property
+        return searchHelper(root, value);
     }
 
     /**
@@ -47,9 +45,7 @@ public class BinarySearchTree {
      * @param value The value to delete
      */
     public void delete(int value) {
-        // TODO: Implement this method
-        // Hint: Handle three cases - leaf, one child, two children
-        // For two children, use inorder successor or predecessor
+        root = deleteHelper(root, value);
     }
 
     /**
@@ -59,8 +55,16 @@ public class BinarySearchTree {
      * @throws IllegalStateException if the tree is empty
      */
     public int findMin() {
-        // TODO: Implement this method
-        // Hint: Keep going left!
+        if (root == null) {
+            throw new IllegalArgumentException("Cannot find min");
+        }
+
+        TreeNode current = root;
+
+        while (current.left != null) {
+            current = current.left;
+        }
+        return current.data;
     }
 
     /**
@@ -70,8 +74,15 @@ public class BinarySearchTree {
      * @throws IllegalStateException if the tree is empty
      */
     public int findMax() {
-        // TODO: Implement this method
-        // Hint: Keep going right!
+        if (root == null) {
+            throw new IllegalArgumentException("Cannot find max");
+        }
+        TreeNode current = root;
+
+        while (current.right != null) {
+            current = current.right;
+        }
+        return current.data;
     }
 
     /**
@@ -80,9 +91,10 @@ public class BinarySearchTree {
      * @return A list of values in inorder sequence
      */
     public List inorderTraversal() {
-        // TODO: Implement this method
-        // Hint: Left -> Root -> Right
-        // Should return values in sorted order!
+        List<Integer> result = new ArrayList<>();
+
+        inorderHelper(root, result);
+        return result;
     }
 
     /**
@@ -91,8 +103,10 @@ public class BinarySearchTree {
      * @return A list of values in preorder sequence
      */
     public List preorderTraversal() {
-        // TODO: Implement this method
-        // Hint: Root -> Left -> Right
+        List<Integer> result = new ArrayList<>();
+
+        preorderHelper(root, result);
+        return result;
     }
 
     /**
@@ -101,8 +115,10 @@ public class BinarySearchTree {
      * @return A list of values in postorder sequence
      */
     public List postorderTraversal() {
-        // TODO: Implement this method
-        // Hint: Left -> Right -> Root
+        List<Integer> result = new ArrayList<>();
+
+        postorderHelper(root, result);
+        return result;
     }
 
     /**
@@ -113,8 +129,7 @@ public class BinarySearchTree {
      * @return The height of the tree
      */
     public int height() {
-        // TODO: Implement this method
-        // Hint: Use recursion - height = 1 + max(left height, right height)
+        return heightHelper(root);
     }
 
     /**
@@ -123,8 +138,7 @@ public class BinarySearchTree {
      * @return The number of nodes
      */
     public int size() {
-        // TODO: Implement this method
-        // Hint: Recursively count nodes
+        return sizeHelper(root);
     }
 
     /**
@@ -133,7 +147,7 @@ public class BinarySearchTree {
      * @return true if the tree is empty, false otherwise
      */
     public boolean isEmpty() {
-        // TODO: Implement this method
+        return root == null;
     }
 
     /**
@@ -150,9 +164,106 @@ public class BinarySearchTree {
     // You may add private helper methods below
     // ========================================
 
-    // Example helper method structure:
-    // private TreeNode insertHelper(TreeNode node, int value) {
-    //     // Your code here
-    // }
+    private int sizeHelper(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        return sizeHelper(node.left) + sizeHelper(node.right) + 1;
+    }
+
+    private boolean searchHelper(TreeNode node, int val) {
+        if (node == null) {
+            return false;
+        }
+        if (val == node.data) {
+            return true;
+        }
+
+        if (val < node.data) {
+            return searchHelper(node.left, val);
+        }else {
+            return searchHelper(node.right, val);
+        }
+    }
+
+    private TreeNode insertHelper(TreeNode node, int val) {
+        if (node == null) {
+            return new TreeNode(val);
+        }
+
+        if (val < node.data) {
+            node.left = insertHelper(node.left, val);
+        }else if (val > node.data) {
+            node.right = insertHelper(node.right, val);
+        }
+
+        return node;
+    }
+
+    private void inorderHelper(TreeNode node, List<Integer> out) {
+        if (node == null) {
+            return;
+        }
+
+        inorderHelper(node.left, out);
+        out.add(node.data);
+        inorderHelper(node.right, out);
+    }
+
+    private void preorderHelper(TreeNode node, List<Integer> out) {
+        if (node == null) {
+            return;
+        }
+
+        out.add(node.data);
+        preorderHelper(node.left, out);
+        preorderHelper(node.right, out);
+    }
+
+    private void postorderHelper(TreeNode node, List<Integer> out) {
+        if (node == null) {
+            return;
+        }
+
+        postorderHelper(node.left, out);
+        postorderHelper(node.right, out);
+        out.add(node.data);
+    }
+
+    private int heightHelper(TreeNode node) {
+        if (node == null) {
+            return -1;
+        }
+        return 1 + Math.max(heightHelper(node.left), heightHelper(node.right));
+    }
+
+    private TreeNode deleteHelper(TreeNode node, int val) {
+        if (node == null) {
+            return null;
+        }
+
+        if (val < node.data) {
+            node.left = deleteHelper(node.left, val);
+        }else if (val > node.data) {
+            node.right = deleteHelper(node.right, val);
+        }else {
+
+            if (node.left == null && node.right == null) {
+                return null;                                          // CASE 1
+            }else if (node.left == null) {
+                return node.right;                                    // CASE 2 Right
+            }else if (node.right == null) {
+                return node.left;                                     // CASE 2 Left
+            }else {
+                TreeNode successor = node.right;
+                while (successor.left != null) {
+                    successor = successor.left;
+                }
+                node.data = successor.data;
+                 node.right = deleteHelper(node.right, successor.data);
+            }
+        }
+        return node;
+    }
 
 }

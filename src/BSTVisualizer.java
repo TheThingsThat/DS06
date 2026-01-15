@@ -235,7 +235,7 @@ public class BSTVisualizer extends JFrame {
         traversalIndex = 0;
         traversalTimer = new Timer(animationDelay, e -> {
             if (traversalIndex < traversalSequence.size()) {
-                highlightedNode = traversalSequence.get(traversalIndex++);
+                highlightedNode = (TreeNode) traversalSequence.get(traversalIndex++);
                 treePanel.repaint();
             } else {
                 traversalTimer.stop();
